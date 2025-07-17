@@ -1,31 +1,27 @@
-
 const express = require('express');
 const bodyParser = require('body-parser');
-const { Configuration, OpenAIApi } = require('openai');
+const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const app = express();
 app.use(bodyParser.json());
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-const openai = new OpenAIApi(configuration);
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
 app.post('/generate', async (req, res) => {
   const { prompt } = req.body;
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
       messages: [{ role: 'user', content: prompt }],
       temperature: 0.7,
     });
 
-    res.json({ response: completion.data.choices[0].message.content });
+    res.json({ response: completion.choices[0].message.content });
   } catch (error) {
-    console.error('Error calling OpenAI API:', error.response?.data || error.message);
-    res.status(500).json({ error: 'Failed to generate response.' });
+    console.error('OpenAI API Error:', error);
+    res.status(500).json({ error: 'Failed to generate response' });
   }
 });
 
