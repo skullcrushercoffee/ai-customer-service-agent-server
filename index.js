@@ -1,9 +1,11 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const { OpenAI } = require('openai');
 require('dotenv').config();
 
 const app = express();
+app.use(cors()); // ✅ Allow all origins for CORS
 app.use(bodyParser.json());
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
